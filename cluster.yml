@@ -9,3 +9,6 @@ managedNodeGroups:
   - name: ng-1
     instanceType: t3.medium
     desiredCapacity: 2
+    spot: true
+    ssh:
+      publicKeyName: my-ec2-keypair
