@@ -1,0 +1,24 @@
+Kubernetes with AWS
+––––––––––––––––––
+→ Install awscli
+aws --version
+
+→ Install eksctl
+
+kubectl version --client
+→ Install Kubernetes-cli
+
+⇒ aws configure
+⇒ aws sts get-caller-identity
+{
+    "UserId": "XGEGRHESHDRRHEG",
+    "Account": "XXXXXXXXXXXX",
+    "Arn": "arn:aws:iam::XXXXXXXXXXXX:user/M4"
+}
+
+eksctl create cluster -f cluster.yml
+
+→ aws credentials ⇒cat /Users/naveenkalidindi/.aws/credentials
+→ Kubeconfig ⇒ cat /Users/naveenkalidindi/.kube/config
+
+eksctl delete cluster -f cluster.yml

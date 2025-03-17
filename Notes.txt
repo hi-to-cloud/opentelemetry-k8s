@@ -1,0 +1,137 @@
+Architecture
+https://opentelemetry.io/docs/demo/architecture/
+
+Step1:
+kubectl apply -f serviceaccount.yaml 
+```
+serviceaccount/opentelemetry-demo created
+```
+
+Step2:
+kubectl apply -f complete-deploy.yaml
+```
+serviceaccount/opentelemetry-demo unchanged
+service/opentelemetry-demo-adservice created
+service/opentelemetry-demo-cartservice created
+service/opentelemetry-demo-checkoutservice created
+service/opentelemetry-demo-currencyservice created
+service/opentelemetry-demo-emailservice created
+service/opentelemetry-demo-flagd created
+service/opentelemetry-demo-frontend created
+service/opentelemetry-demo-frontendproxy created
+service/opentelemetry-demo-imageprovider created
+service/opentelemetry-demo-kafka created
+service/opentelemetry-demo-loadgenerator created
+service/opentelemetry-demo-paymentservice created
+service/opentelemetry-demo-productcatalogservice created
+service/opentelemetry-demo-quoteservice created
+service/opentelemetry-demo-recommendationservice created
+service/opentelemetry-demo-shippingservice created
+service/opentelemetry-demo-valkey created
+deployment.apps/opentelemetry-demo-accountingservice created
+deployment.apps/opentelemetry-demo-adservice created
+deployment.apps/opentelemetry-demo-cartservice created
+deployment.apps/opentelemetry-demo-checkoutservice created
+deployment.apps/opentelemetry-demo-currencyservice created
+deployment.apps/opentelemetry-demo-emailservice created
+deployment.apps/opentelemetry-demo-flagd created
+deployment.apps/opentelemetry-demo-frauddetectionservice created
+deployment.apps/opentelemetry-demo-frontend created
+deployment.apps/opentelemetry-demo-frontendproxy created
+deployment.apps/opentelemetry-demo-imageprovider created
+deployment.apps/opentelemetry-demo-kafka created
+deployment.apps/opentelemetry-demo-loadgenerator created
+deployment.apps/opentelemetry-demo-paymentservice created
+deployment.apps/opentelemetry-demo-productcatalogservice created
+deployment.apps/opentelemetry-demo-quoteservice created
+deployment.apps/opentelemetry-demo-recommendationservice created
+deployment.apps/opentelemetry-demo-shippingservice created
+deployment.apps/opentelemetry-demo-valkey created
+configmap/opentelemetry-demo-flagd-config created
+```
+
+Step3:
+kubectl get pods
+
+Step4:
+kubectl get services
+
+Step4:
+kubectl edit svc opentelemetry-demo-frontendproxy 
+```
+kubectl get svc | grep front                     
+opentelemetry-demo-frontend                ClusterIP      10.100.213.231   <none>                                                                    8080/TCP            13m
+opentelemetry-demo-frontendproxy           LoadBalancer   10.100.223.24    ac5704323455e4fad97fe9ca52f67f05-1630029805.us-west-1.elb.amazonaws.com   8080:31374/TCP      13m
+```
+
+Step5:
+OIDC-Connector.txt
+
+Step6: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/
+Create IAM Policy 
+```
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/refs/heads/main/docs/install/iam_policy.json
+```
+```
+aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam_policy.json
+```
+```output
+{
+    "Policy": {
+        "PolicyName": "AWSLoadBalancerControllerIAMPolicy",
+        "PolicyId": "ANPAXZEFH2LF27BOOIOGW",
+        "Arn": "arn:aws:iam::535002862283:policy/AWSLoadBalancerControllerIAMPolicy",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2025-03-16T17:34:12+00:00",
+        "UpdateDate": "2025-03-16T17:34:12+00:00"
+    }
+}
+```
+Step7:
+```
+eksctl create iamserviceaccount \
+--cluster=lookatme-k8s \
+--region us-west-1 \
+--namespace=kube-system \
+--name=aws-load-balancer-controller \
+--attach-policy-arn=arn:aws:iam::535002862283:policy/AWSLoadBalancerControllerIAMPolicy \
+--override-existing-serviceaccounts \
+--approve
+```
+Step8:
+```
+helm repo add eks https://aws.github.io/eks-charts
+```
+```
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=lookatme-k8s --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
+```
+```output
+NAME: aws-load-balancer-controller
+LAST DEPLOYED: Sun Mar 16 22:49:46 2025
+NAMESPACE: kube-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+AWS Load Balancer controller installed!
+```
+```
+kubectl get pods -n kube-system
+```
+Step9:
+kubectl apply -f ingress.yaml 
+
+Step10:
+Add Route53 Record
+
+Step11:
+lookatme.space
+
+Debug"
+https://www.whatsmydns.net/#A/lookatme.space
