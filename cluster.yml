@@ -11,4 +11,4 @@ managedNodeGroups:
     desiredCapacity: 2
     spot: true
     ssh:
-      publicKeyName: my-ec2-keypair
+      publicKeyName: M4
